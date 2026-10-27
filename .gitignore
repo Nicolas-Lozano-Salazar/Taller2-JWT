@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Base de datos local (se regenera con npm run seed)
+backend/data/
+
+# Variables de entorno reales
+backend/.env
+frontend/.env
+!.env.example
+
+# Flutter / Dart
+frontend/.dart_tool/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/android/.gradle/
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/macos/Pods/
+
+# Editores y sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Registros
+*.log

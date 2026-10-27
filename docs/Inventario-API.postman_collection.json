@@ -1,0 +1,163 @@
+{
+  "info": {
+    "name": "Inventario API - Segundo Parcial",
+    "description": "Coleccion de pruebas para la API REST de inventario (Node.js + Express + SQLite).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "productoId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Salud del servicio",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Listar productos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/productos"
+      }
+    },
+    {
+      "name": "Listar productos con busqueda",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/productos?buscar=arroz"
+      }
+    },
+    {
+      "name": "Consultar producto por id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/productos/{{productoId}}"
+      }
+    },
+    {
+      "name": "Crear producto",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Televisor LED 32 pulgadas\",\n  \"codigo\": \"TEC-002\",\n  \"descripcion\": \"Televisor HD con dos puertos HDMI.\",\n  \"precio\": 899900,\n  \"cantidad\": 6,\n  \"categoria\": \"Tecnologia\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/productos"
+      }
+    },
+    {
+      "name": "Crear producto con codigo duplicado (422)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Televisor LED 32 pulgadas\",\n  \"codigo\": \"TEC-002\",\n  \"descripcion\": \"Copia para probar el codigo unico.\",\n  \"precio\": 899900,\n  \"cantidad\": 6,\n  \"categoria\": \"Tecnologia\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/productos"
+      }
+    },
+    {
+      "name": "Crear producto invalido (422)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"\",\n  \"codigo\": \"\",\n  \"precio\": -100,\n  \"cantidad\": 1.5,\n  \"categoria\": \"\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/productos"
+      }
+    },
+    {
+      "name": "Actualizar producto",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Televisor LED 32 pulgadas\",\n  \"codigo\": \"TEC-002\",\n  \"descripcion\": \"Televisor HD actualizado, incluye control remoto.\",\n  \"precio\": 849900,\n  \"cantidad\": 4,\n  \"categoria\": \"Tecnologia\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/productos/{{productoId}}"
+      }
+    },
+    {
+      "name": "Eliminar producto",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/productos/{{productoId}}"
+      }
+    },
+    {
+      "name": "Producto inexistente (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/productos/999999"
+      }
+    },
+    {
+      "name": "Estadisticas del dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/estadisticas"
+      }
+    }
+  ]
+}

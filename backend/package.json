@@ -1,0 +1,30 @@
+{
+  "name": "inventario-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API REST para la gestion de inventario de productos (Segundo Parcial Practico).",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/db/seed.js --force",
+    "smoke": "node scripts/smoke-test.mjs"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "express",
+    "sqlite",
+    "inventario"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
