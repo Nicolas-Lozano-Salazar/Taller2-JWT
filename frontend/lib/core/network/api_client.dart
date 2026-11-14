@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../auth/auth_controller.dart';
 import '../config/app_config.dart';
+import '../storage/session_storage.dart';
+import '../storage/token_storage.dart';
 
 /// Cliente HTTP unico de la aplicacion, construido sobre Dio.
 /// Los widgets nunca usan Dio directamente: lo hacen a traves del repositorio.
@@ -19,6 +22,27 @@ class ApiClient {
             },
           ),
         ) {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await TokenStorage.instance.leer();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+        onError: (error, handler) async {
+          final esLogin = error.requestOptions.path.contains('/auth/login');
+          if (error.response?.statusCode == 401 && !esLogin) {
+            await TokenStorage.instance.eliminar();
+            await SessionStorage.instance.limpiar();
+            AuthController.alExpirarSesion?.call();
+          }
+          handler.next(error);
+        },
+      ),
+    );
+
     if (kDebugMode) {
       _dio.interceptors.add(
         LogInterceptor(

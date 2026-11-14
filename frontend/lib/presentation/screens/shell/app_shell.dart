@@ -16,6 +16,7 @@ class AppShell extends StatelessWidget {
 
   int get _indice {
     if (ubicacion.startsWith('/productos')) return 1;
+    if (ubicacion.startsWith('/sesion')) return 2;
     return 0;
   }
 
@@ -28,7 +29,9 @@ class AppShell extends StatelessWidget {
         height: 68,
         onDestinationSelected: (indice) {
           if (indice == _indice) return;
-          context.go(indice == 0 ? '/' : '/productos');
+          if (indice == 0) context.go('/');
+          if (indice == 1) context.go('/productos');
+          if (indice == 2) context.go('/sesion');
         },
         destinations: const [
           NavigationDestination(
@@ -40,6 +43,11 @@ class AppShell extends StatelessWidget {
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2),
             label: 'Productos',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Sesion',
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/auth/auth_controller.dart';
 import 'presentation/theme/app_theme.dart';
 import 'routes/app_router.dart';
 
@@ -14,6 +15,8 @@ Future<void> main() async {
   } catch (error) {
     debugPrint('No se pudo cargar .env, se usara la URL por defecto: $error');
   }
+
+  await AuthController.instance.inicializar();
 
   runApp(const InventarioApp());
 }

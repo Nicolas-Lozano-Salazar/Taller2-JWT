@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/auth/auth_controller.dart';
+import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/dashboard/dashboard_screen.dart';
 import '../presentation/screens/productos/producto_detalle_screen.dart';
 import '../presentation/screens/productos/producto_form_screen.dart';
 import '../presentation/screens/productos/productos_screen.dart';
+import '../presentation/screens/sesion/sesion_screen.dart';
 import '../presentation/screens/shell/app_shell.dart';
 
 /// Navegacion declarativa con go_router.
@@ -15,10 +18,25 @@ class AppRouter {
       GlobalKey<NavigatorState>(debugLabel: 'raiz');
 
   static GoRouter create() {
+    final auth = AuthController.instance;
     return GoRouter(
       navigatorKey: _navegadorRaiz,
       initialLocation: '/',
+      refreshListenable: auth,
+      redirect: (context, state) {
+        final autenticado = auth.value.estaAutenticado;
+        final enLogin = state.matchedLocation == '/login';
+
+        if (!autenticado && !enLogin) return '/login';
+        if (autenticado && enLogin) return '/';
+        return null;
+      },
       routes: [
+        GoRoute(
+          path: '/login',
+          name: 'login',
+          builder: (context, state) => const LoginScreen(),
+        ),
         ShellRoute(
           builder: (context, state, child) => AppShell(
             ubicacion: state.uri.path,
@@ -62,6 +80,11 @@ class AppRouter {
                   ],
                 ),
               ],
+            ),
+            GoRoute(
+              path: '/sesion',
+              name: 'sesion',
+              builder: (context, state) => const SesionScreen(),
             ),
           ],
         ),
