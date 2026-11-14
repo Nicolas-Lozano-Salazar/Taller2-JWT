@@ -47,8 +47,10 @@ class ApiClient {
       _dio.interceptors.add(
         LogInterceptor(
           request: true,
-          requestBody: true,
-          responseBody: true,
+          requestHeader: false,
+          requestBody: false,
+          responseHeader: false,
+          responseBody: false,
           error: true,
           logPrint: (objeto) => debugPrint('[Dio] $objeto'),
         ),
