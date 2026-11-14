@@ -42,7 +42,14 @@ class AuthController extends ValueNotifier<AuthState> {
 
   Future<void> inicializar() async {
     alExpirarSesion = () => cerrarSesion();
-    final token = await TokenStorage.instance.leer();
+
+    String? token;
+    try {
+      token = await TokenStorage.instance.leer();
+    } catch (error) {
+      debugPrint('No se pudo leer el token almacenado: $error');
+    }
+
     if (token == null || token.isEmpty) {
       value = const AuthState(status: AuthStatus.noAutenticado);
       return;
@@ -53,8 +60,7 @@ class AuthController extends ValueNotifier<AuthState> {
       final usuario = await _repositorio.obtenerSesion();
       value = AuthState(status: AuthStatus.autenticado, usuario: usuario);
     } catch (_) {
-      await _repositorio.cerrarSesion();
-      value = const AuthState(status: AuthStatus.noAutenticado);
+      await cerrarSesion();
     }
   }
 
@@ -83,8 +89,13 @@ class AuthController extends ValueNotifier<AuthState> {
   }
 
   Future<void> cerrarSesion() async {
-    await _repositorio.cerrarSesion();
-    value = const AuthState(status: AuthStatus.noAutenticado);
+    try {
+      await _repositorio.cerrarSesion();
+    } catch (error) {
+      debugPrint('No se pudieron borrar los datos de sesion: $error');
+    } finally {
+      value = const AuthState(status: AuthStatus.noAutenticado);
+    }
   }
 
   void limpiarError() {
