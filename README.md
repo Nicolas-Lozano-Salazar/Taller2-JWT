@@ -313,7 +313,7 @@ Ajuste la URL segun la plataforma:
 
 ### 5.1. Permisos ya configurados
 
-- **Android:** `INTERNET`, `android:usesCleartextTraffic="true"` y `android:allowBackup="false"` en `android/app/src/main/AndroidManifest.xml`. `minSdk` se fijo en 23 porque es el minimo de `flutter_secure_storage`.
+- **Android:** `INTERNET`, `android:usesCleartextTraffic="true"` y `android:allowBackup="false"` en `android/app/src/main/AndroidManifest.xml`. El `minSdk` de Flutter es compatible con el minimo 23 que exige `flutter_secure_storage`.
 - **iOS:** `NSAppTransportSecurity` con `NSAllowsArbitraryLoads` en `ios/Runner/Info.plist` para desarrollo local, y `Runner.entitlements` con Keychain Sharing para el almacenamiento seguro.
 - **Web:** CORS habilitado en Express.
 - En produccion use **HTTPS** y retire las excepciones de tráfico no seguro.
