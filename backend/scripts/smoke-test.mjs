@@ -66,6 +66,9 @@ const ejecutar = async () => {
   const sinToken = await peticion('GET', '/productos');
   verificar(sinToken.status === 401, 'GET /api/productos sin token responde 401');
 
+  const tokenInvalido = await peticion('GET', '/productos', null, 'token.invalido');
+  verificar(tokenInvalido.status === 401, 'GET /api/productos con token invalido responde 401');
+
   const sesion = await peticion('GET', '/auth/me', null, token);
   verificar(sesion.status === 200 && sesion.datos?.data?.autenticado === true, 'GET /api/auth/me valida la sesion');
 

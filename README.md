@@ -375,7 +375,7 @@ cd backend
 npm run smoke
 ```
 
-Resultado esperado: **16 pruebas aprobadas, 0 fallidas** (login valido/invalido, 401 sin token, validacion de sesion, CRUD completo, validaciones, 404, duplicados y estadisticas).
+Resultado esperado: **17 pruebas aprobadas, 0 fallidas** (login valido/invalido, 401 sin token y con token invalido, validacion de sesion, CRUD completo, validaciones, 404, duplicados y estadisticas).
 
 ### Flutter
 
