@@ -20,4 +20,12 @@ export class ApiError extends Error {
   static unprocessable(message = 'Los datos enviados no son validos.', details) {
     return new ApiError(422, message, details);
   }
+
+  static unauthorized(message = 'No autorizado.') {
+    return new ApiError(401, message);
+  }
+
+  static forbidden(message = 'Acceso prohibido.') {
+    return new ApiError(403, message);
+  }
 }

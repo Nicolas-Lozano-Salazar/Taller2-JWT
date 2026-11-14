@@ -21,10 +21,13 @@ const verificar = (condicion, descripcion, extra = '') => {
   }
 };
 
-const peticion = async (metodo, ruta, cuerpo) => {
+const peticion = async (metodo, ruta, cuerpo, token) => {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const respuesta = await fetch(`${BASE_URL}${ruta}`, {
     method: metodo,
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: cuerpo ? JSON.stringify(cuerpo) : undefined,
   });
 
@@ -47,7 +50,26 @@ const ejecutar = async () => {
   const salud = await peticion('GET', '/health');
   verificar(salud.status === 200 && salud.datos?.status === 'ok', 'GET /api/health responde 200');
 
-  const listado = await peticion('GET', '/productos');
+  const loginInvalido = await peticion('POST', '/auth/login', {
+    email: 'admin@inventario.com',
+    password: 'incorrecta',
+  });
+  verificar(loginInvalido.status === 401, 'POST /api/auth/login con credenciales invalidas responde 401');
+
+  const login = await peticion('POST', '/auth/login', {
+    email: 'admin@inventario.com',
+    password: 'Admin123!',
+  });
+  verificar(login.status === 200 && typeof login.datos?.data?.accessToken === 'string', 'POST /api/auth/login con credenciales validas responde 200');
+
+  const token = login.datos?.data?.accessToken;
+  const sinToken = await peticion('GET', '/productos');
+  verificar(sinToken.status === 401, 'GET /api/productos sin token responde 401');
+
+  const sesion = await peticion('GET', '/auth/me', null, token);
+  verificar(sesion.status === 200 && sesion.datos?.data?.autenticado === true, 'GET /api/auth/me valida la sesion');
+
+  const listado = await peticion('GET', '/productos', null, token);
   verificar(listado.status === 200 && Array.isArray(listado.datos?.data), 'GET /api/productos responde 200 con arreglo');
   verificar(
     (listado.datos?.data?.length ?? 0) >= 10,
@@ -56,10 +78,10 @@ const ejecutar = async () => {
   );
 
   const primero = listado.datos.data[0];
-  const detalle = await peticion('GET', `/productos/${primero.id}`);
+  const detalle = await peticion('GET', `/productos/${primero.id}`, null, token);
   verificar(detalle.status === 200 && detalle.datos?.data?.id === primero.id, 'GET /api/productos/{id} devuelve el detalle');
 
-  const inexistente = await peticion('GET', '/productos/999999');
+  const inexistente = await peticion('GET', '/productos/999999', null, token);
   verificar(inexistente.status === 404, 'GET /api/productos/{id} inexistente responde 404');
 
   const nuevo = {
@@ -71,13 +93,13 @@ const ejecutar = async () => {
     categoria: 'Pruebas',
   };
 
-  const creado = await peticion('POST', '/productos', nuevo);
+  const creado = await peticion('POST', '/productos', nuevo, token);
   verificar(creado.status === 201 && creado.datos?.data?.codigo === nuevo.codigo, 'POST /api/productos responde 201');
 
-  const duplicado = await peticion('POST', '/productos', nuevo);
+  const duplicado = await peticion('POST', '/productos', nuevo, token);
   verificar(duplicado.status === 422, 'POST con codigo duplicado responde 422');
 
-  const invalido = await peticion('POST', '/productos', { nombre: '', precio: -1, cantidad: 1.5, categoria: '' });
+  const invalido = await peticion('POST', '/productos', { nombre: '', precio: -1, cantidad: 1.5, categoria: '' }, token);
   verificar(invalido.status === 422 && Array.isArray(invalido.datos?.error?.details), 'POST invalido responde 422 con detalles');
 
   const id = creado.datos?.data?.id;
@@ -86,19 +108,19 @@ const ejecutar = async () => {
     nombre: 'Producto actualizado',
     precio: 15000,
     cantidad: 12,
-  });
+  }, token);
   verificar(
     actualizado.status === 200 && actualizado.datos?.data?.nombre === 'Producto actualizado' && actualizado.datos?.data?.cantidad === 12,
     'PUT /api/productos/{id} actualiza el registro',
   );
 
-  const eliminado = await peticion('DELETE', `/productos/${id}`);
+  const eliminado = await peticion('DELETE', `/productos/${id}`, null, token);
   verificar(eliminado.status === 200, 'DELETE /api/productos/{id} responde 200');
 
-  const borrado = await peticion('GET', `/productos/${id}`);
+  const borrado = await peticion('GET', `/productos/${id}`, null, token);
   verificar(borrado.status === 404, 'El producto eliminado ya no existe');
 
-  const estadisticas = await peticion('GET', '/estadisticas');
+  const estadisticas = await peticion('GET', '/estadisticas', null, token);
   verificar(
     estadisticas.status === 200 &&
       typeof estadisticas.datos?.data?.totalProductos === 'number' &&

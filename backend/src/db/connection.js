@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import bcrypt from 'bcryptjs';
 import { env } from '../config/env.js';
 import { productosSemilla } from './seed-data.js';
 
@@ -30,6 +31,15 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos (categoria);
   CREATE INDEX IF NOT EXISTS idx_productos_nombre ON productos (nombre);
+
+  CREATE TABLE IF NOT EXISTS usuarios (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre        TEXT    NOT NULL,
+    email         TEXT    NOT NULL COLLATE NOCASE UNIQUE,
+    password_hash TEXT    NOT NULL,
+    creado_en     TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios (email);
 `);
 
 const insertarSemilla = db.prepare(`
@@ -63,6 +73,23 @@ export function recargarSemilla() {
   db.exec("DELETE FROM productos; DELETE FROM sqlite_sequence WHERE name = 'productos';");
   insertarVarios(productosSemilla);
   return productosSemilla.length;
+}
+
+/** Crea un usuario administrador de prueba si la tabla esta vacia. */
+export function cargarUsuarioSemillaSiEstaVacia() {
+  const { total } = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get();
+  if (total > 0) return 0;
+
+  const passwordHash = bcrypt.hashSync('Admin123!', 10);
+  db.prepare(
+    `INSERT INTO usuarios (nombre, email, password_hash) VALUES (?, ?, ?)`,
+  ).run('Administrador', 'admin@inventario.com', passwordHash);
+  return 1;
+}
+
+const usuariosInsertados = cargarUsuarioSemillaSiEstaVacia();
+if (usuariosInsertados > 0) {
+  console.log('[db] Usuario de prueba creado: admin@inventario.com / Admin123!');
 }
 
 if (env.seed) {

@@ -29,7 +29,11 @@ app.get('/', (_req, res) => {
   res.json({
     mensaje: 'API REST de Inventario - Segundo Parcial Practico',
     documentacion: '/api/health',
-    endpoints: {
+    autenticacion: {
+      login: 'POST /api/auth/login',
+      sesion: 'GET /api/auth/me (Bearer token)',
+    },
+    endpointsProtegidos: {
       listar: 'GET /api/productos',
       detalle: 'GET /api/productos/{id}',
       crear: 'POST /api/productos',

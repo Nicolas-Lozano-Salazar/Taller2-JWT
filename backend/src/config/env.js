@@ -19,4 +19,6 @@ export const env = {
   seed: parseBoolean(process.env.SEED, true),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   isProduction: (process.env.NODE_ENV ?? 'development') === 'production',
+  jwtSecret: process.env.JWT_SECRET ?? 'clave_super_secreta_cambiar_en_produccion',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1h',
 };
