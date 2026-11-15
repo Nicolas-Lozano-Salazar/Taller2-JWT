@@ -28,65 +28,14 @@ Solucion completa para la administracion de productos de un establecimiento come
 
 ---
 
-## 2. Estructura del repositorio
-
-```
-inventario/
-├── backend/                     # API REST (Node.js + Express + SQLite)
-│   ├── scripts/
-│   │   └── smoke-test.mjs       # Prueba automatizada de todos los endpoints
-│   ├── src/
-│   │   ├── config/env.js        # Variables de entorno, JWT y rutas
-│   │   ├── controllers/         # Logica HTTP (productos y autenticacion)
-│   │   ├── db/                  # Conexion SQLite, esquema y datos de prueba
-│   │   ├── middlewares/         # Errores centralizados y validacion JWT
-│   │   ├── models/              # Acceso a datos (productos y usuarios)
-│   │   ├── routes/              # Endpoints publicos y protegidos
-│   │   ├── utils/               # Error controlado de la API
-│   │   ├── validators/          # Validacion y normalizacion de campos
-│   │   ├── app.js               # Configuracion de Express
-│   │   └── server.js            # Arranque del servidor
-│   ├── .env.example
-│   └── package.json
-│
-├── frontend/                    # Aplicacion Flutter
-│   ├── lib/
-│   │   ├── core/
-│   │   │   ├── auth/            # Estado de sesion y cierre de sesion
-│   │   │   ├── config/          # URL base desde .env
-│   │   │   ├── network/         # Cliente Dio, interceptor JWT y errores
-│   │   │   ├── storage/         # Token seguro y datos del usuario
-│   │   │   └── utils/           # Formatos de moneda y numeros
-│   │   ├── data/
-│   │   │   ├── models/          # Producto, Estadisticas y Usuario
-│   │   │   └── repositories/    # Consumo de la API (auth y productos)
-│   │   ├── presentation/
-│   │   │   ├── screens/         # Login, dashboard, productos y sesion
-│   │   │   ├── theme/           # Tema Material 3
-│   │   │   └── widgets/         # Componentes reutilizables
-│   │   ├── routes/app_router.dart
-│   │   └── main.dart
-│   ├── test/                    # Pruebas de modelos y estado de auth
-│   ├── .env                     # URL base local (no contiene secretos)
-│   └── pubspec.yaml
-│
-├── docs/
-│   ├── GUIA-VIDEO-Y-PDF.md      # Guion del video y checklist del PDF
-│   └── evidencias/              # Espacio para capturas del informe
-├── .gitignore
-└── README.md
-```
-
----
 
 
-
-## 3. Ejecucion del backend
+## 2. Ejecucion del backend
 
 ```powershell
 cd backend
 npm install
-Copy-Item .env.example .env    # en Linux/macOS: cp .env.example .env
+Copy-Item .env.example .env    
 npm start
 ```
 
@@ -126,7 +75,7 @@ Al iniciar por primera vez, el backend crea el usuario de prueba:
 
 ---
 
-## 4. Endpoints de la API
+## 3. Endpoints de la API
 
 Base URL: `http://localhost:3000/api`
 
@@ -155,7 +104,7 @@ Endpoints adicionales de apoyo:
 - `GET /api/productos?buscar=arroz` — filtra por nombre, codigo o categoria.
 - `GET /api/productos?categoria=Alimentos` — filtra por categoria.
 
-### 4.0. Ejemplo — iniciar sesion
+### 3.0. Ejemplo — iniciar sesion
 
 ```http
 POST /api/auth/login
@@ -197,7 +146,7 @@ Credenciales incorrectas responden `401`:
 }
 ```
 
-### 4.1. Ejemplo — listar productos
+### 3.1. Ejemplo — listar productos
 
 ```http
 GET /api/productos
@@ -224,7 +173,7 @@ Authorization: Bearer <access_token>
 }
 ```
 
-### 4.2. Ejemplo — registrar producto
+### 3.2. Ejemplo — registrar producto
 
 ```http
 POST /api/productos
@@ -260,7 +209,7 @@ Respuesta `201 Created`:
 }
 ```
 
-### 4.3. Ejemplo — error de validacion
+### 3.3. Ejemplo — error de validacion
 
 ```json
 {
@@ -274,7 +223,7 @@ Respuesta `201 Created`:
 }
 ```
 
-### 4.4. Reglas de validacion
+### 3.4. Reglas de validacion
 
 - `nombre`: obligatorio, entre 2 y 120 caracteres.
 - `codigo`: obligatorio, unico, entre 2 y 40 caracteres (`A-Z`, `0-9`, `.`, `_`, `-`). Se normaliza a mayusculas.
@@ -288,7 +237,7 @@ Respuesta `201 Created`:
 
 ---
 
-## 5. Ejecucion de la aplicacion Flutter
+## 4. Ejecucion de la aplicacion Flutter
 
 ```powershell
 cd frontend
@@ -296,7 +245,6 @@ flutter pub get
 flutter run
 ```
 
-El archivo `frontend/.env` ya viene configurado para el **emulador Android**:
 
 ```env
 API_BASE_URL=http://10.0.2.2:3000/api
@@ -311,14 +259,14 @@ Ajuste la URL segun la plataforma:
 | Dispositivo fisico | `http://IP_LOCAL_DE_SU_PC:3000/api` (ej. `http://192.168.0.10:3000/api`) |
 
 
-### 5.1. Permisos ya configurados
+### 4.1. Permisos ya configurados
 
 - **Android:** `INTERNET`, `android:usesCleartextTraffic="true"` y `android:allowBackup="false"` en `android/app/src/main/AndroidManifest.xml`. El `minSdk` de Flutter es compatible con el minimo 23 que exige `flutter_secure_storage`.
 - **iOS:** `NSAppTransportSecurity` con `NSAllowsArbitraryLoads` en `ios/Runner/Info.plist` para desarrollo local, y `Runner.entitlements` con Keychain Sharing para el almacenamiento seguro.
 - **Web:** CORS habilitado en Express.
 - En produccion use **HTTPS** y retire las excepciones de tráfico no seguro.
 
-### 5.2. Funcionalidades de la app
+### 4.2. Funcionalidades de la app
 
 - **Login** con validacion de campos, estado de carga y mensaje de error para credenciales invalidas.
 - **Token JWT** almacenado con `flutter_secure_storage`; el nombre y correo del usuario se guardan con `shared_preferences`.
@@ -342,7 +290,7 @@ Ajuste la URL segun la plataforma:
 - **Navegacion** con `go_router` (menu inferior y rutas anidadas para detalle/edicion).
 - **Separacion de responsabilidades**: la vista nunca hace peticiones HTTP; usa `ProductoRepository`, que a su vez usa el cliente Dio.
 
-### 5.3. Flujo de una operacion
+### 4.3. Flujo de una operacion
 
 ```
 LoginScreen
@@ -364,7 +312,7 @@ SQLite (backend/data/inventario.db)
 
 ---
 
-## 6 Pruebas y calidad
+## 5. Pruebas y calidad
 
 ### Backend
 
@@ -393,7 +341,7 @@ flutter build web --dart-define=API_BASE_URL=http://localhost:3000/api
 
 ---
 
-## 7. Base de datos
+## 6. Base de datos
 
 Archivo: `backend/data/inventario.db` (se crea automaticamente y se conserva al reiniciar el servidor).
 
@@ -432,7 +380,7 @@ node -e "const {DatabaseSync}=require('node:sqlite'); const db=new DatabaseSync(
 
 ---
 
-## 8. Implementacion de autenticacion JWT
+## 7. Implementacion de autenticacion JWT
 
 ### Backend
 
@@ -479,27 +427,3 @@ $token = $login.data.accessToken
 
 # Con token: debe responder 200
 curl.exe -H "Authorization: Bearer $token" http://localhost:3000/api/productos
-```
-
----
-
-## 9. Flujo de trabajo GitFlow
-
-| Rama | Proposito |
-|------|-----------|
-| `main` | Version estable |
-| `dev` | Integracion de cambios |
-| `feature/taller_jwt` | Implementacion del taller |
-
-Flujo recomendado:
-
-```powershell
-git checkout dev
-git checkout -b feature/taller_jwt
-# ... cambios y commits descriptivos ...
-git push -u origin feature/taller_jwt
-# Abrir Pull Request feature/taller_jwt -> dev
-# Despues de la revision, integrar dev -> main
-```
-
-> En este entorno los cambios se dejaron en la rama `feature/taller_jwt` sin subirlos automaticamente, a la espera de confirmacion.
